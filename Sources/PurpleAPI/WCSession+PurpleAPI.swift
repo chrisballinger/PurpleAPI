@@ -6,6 +6,7 @@
 //  Copyright © 2018 Chris Ballinger. All rights reserved.
 //
 
+#if canImport(WatchConnectivity)
 import WatchConnectivity
 
 extension WCSession {
@@ -35,3 +36,5 @@ extension WCSession {
 //    }
     
 }
+
+#endif

@@ -97,11 +97,11 @@ extension PurpleAPI: URLSessionDownloadDelegate {
         NSLog("urlSession didBecomeInvalidWithError: \(String(describing: error))")
     }
     
+    #if !os(macOS)
     public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         NSLog("urlSessionDidFinishEvents forBackgroundURLSession \(session)")
     }
-    
-    
+    #endif
 
 }
 

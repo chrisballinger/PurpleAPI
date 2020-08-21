@@ -12,6 +12,8 @@ import UIKit
 import WatchKit
 #endif
 
+#if canImport(UIKit) || canImport(WatchKit)
+
 extension AQI.Level {
     public var color: UIColor {
         switch self {
@@ -92,3 +94,5 @@ extension UIColor {
         return UIColor(red8: 143, green8: 63, blue8: 151)
     }
 }
+
+#endif
