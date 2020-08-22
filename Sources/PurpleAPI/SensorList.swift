@@ -53,13 +53,28 @@ public struct SensorList: Codable {
     
     struct RawSensor {
         var fields: [Field: AnyCodable]
+        func value<T>(for field: Field) -> T? {
+            fields[field]?.value as? T
+        }
+        subscript<T>(field: Field) -> T? {
+            get {
+                value(for: field)
+            }
+        }
     }
-    struct Sensor {
-        var id: Int
-        var label: String
-        var coordinate: CLLocationCoordinate2D
+    public struct Sensor {
+        public var id: PurpleSensor.SensorId
+        public var label: String
+        public var coordinate: CLLocationCoordinate2D
+        public var pm1: PM25?
+        public enum LocationType: Int {
+            case outdoors = 0
+            case indoors = 1
+        }
+        public var locationType: LocationType
     }
-    var sensors: [Sensor] {
+    
+    public var sensors: [Sensor] {
         let rawSensors: [RawSensor] = data.map {
             var sensor = RawSensor(fields: [:])
             for (index, field) in fields.enumerated() {
@@ -67,7 +82,7 @@ public struct SensorList: Codable {
             }
             return sensor
         }
-        let sensors = rawSensors.compactMap { Sensor(fields: $0.fields) }
+        let sensors = rawSensors.compactMap { Sensor($0) }
         if sensors.count != count {
             print("Sensors count doesn't match, data may be missing")
         }
@@ -76,15 +91,20 @@ public struct SensorList: Codable {
 }
 
 extension SensorList.Sensor {
-    init?(fields: [SensorList.Field: AnyCodable]) {
-        guard let id = fields[.id]?.value as? Int,
-            let latitude = fields[.latitude]?.value as? CLLocationDegrees,
-            let longitude = fields[.longitude]?.value as? CLLocationDegrees,
-            let label = fields[.label]?.value as? String else {
+    init?(_ sensor: SensorList.RawSensor) {
+        guard let rawId: Int = sensor[.id],
+            let latitude: CLLocationDegrees = sensor[.latitude],
+            let longitude: CLLocationDegrees = sensor[.longitude],
+            let label: String = sensor[.label],
+            let rawType: Int = sensor[.type],
+            let type = LocationType(rawValue: rawType) else {
                 return nil
         }
-        self.id = id
+        let rawPM1: Double? = sensor.value(for: .pm_1)
+        self.id = PurpleSensor.SensorId(rawId)
         self.label = label
+        self.locationType = type
+        self.pm1 = rawPM1.map { PM25($0) }
         self.coordinate = .init(latitude: latitude, longitude: longitude)
     }
 }

@@ -15,12 +15,11 @@ public struct PurpleSensorResponse: Codable {
     public var results: [PurpleSensor]
 }
 
-public struct Identifier<Parent, T: Codable>: RawRepresentable, Codable {
-    public init?(rawValue: T) {
+public struct Identifier<Parent, T: Codable>: Codable {
+    public init(_ rawValue: T) {
         self.rawValue = rawValue
     }
     public var rawValue: T
-    public typealias RawValue = T
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(rawValue)
@@ -29,6 +28,13 @@ public struct Identifier<Parent, T: Codable>: RawRepresentable, Codable {
         let container = try decoder.singleValueContainer()
         self.rawValue = try container.decode(T.self)
     }
+}
+
+extension PurpleSensor.SensorId: ExpressibleByIntegerLiteral {
+    public init(integerLiteral value: Int) {
+        self.init(value)
+    }
+    public typealias IntegerLiteralType = Int
 }
 
 public struct PurpleSensor: Codable {
@@ -46,10 +52,10 @@ public struct PurpleSensor: Codable {
 
     public var label: String
     public var locationType: LocationType?
-    private var pm2_5: String
-    private var statsJSON: String
+    private var pm2_5: String?
+    private var statsJSON: String?
     public var stats: Stats? {
-        guard let data = statsJSON.data(using: .utf8),
+        guard let data = statsJSON?.data(using: .utf8),
             let stats = try? PurpleSensor.statsDecoder.decode(Stats.self, from: data) else {
             return nil
         }
