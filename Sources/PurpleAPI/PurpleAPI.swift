@@ -12,24 +12,7 @@ import WatchKit
 import ClockKit
 #endif
 
-private enum URLPath: String {
-    case fetchSensor = "/json"
-    
-    func url(baseURL: URL) -> URL {
-        return baseURL.appendingPathComponent("\(rawValue)")
-    }
-}
-
-private enum URLQuery: String {
-    case fetchSensor = "show"
-    
-    func queryItem(value: String?) -> URLQueryItem {
-        return URLQueryItem(name: rawValue, value: value)
-    }
-}
-
 public class PurpleAPI: NSObject {
-    private static let backgroundConfiguration = URLSessionConfiguration.background(withIdentifier: "io.ballinger.PurpleAPI")
     private var session: URLSession?
     private let decoder = JSONDecoder()
     private let baseURL = URL(string: "https://www.purpleair.com/")!
@@ -37,7 +20,7 @@ public class PurpleAPI: NSObject {
     
     public override init() {
         super.init()
-        self.session = URLSession(configuration: PurpleAPI.backgroundConfiguration, delegate: self, delegateQueue: nil)
+        self.session = URLSession(configuration: .purple, delegate: self, delegateQueue: nil)
     }
     
     public func fetchSensor(id: Int) {
@@ -59,7 +42,6 @@ public class PurpleAPI: NSObject {
 
 extension PurpleAPI: URLSessionDownloadDelegate {
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-//        NSLog("urlSession downloadTask didFinishDownloadingTo: \(downloadTask) \(location)")
         guard let originalURL = downloadTask.originalRequest?.url,
             let components = URLComponents(url: originalURL, resolvingAgainstBaseURL: true),
             let path = components.urlPath else {
@@ -133,4 +115,24 @@ private extension URLComponents {
     subscript(queryParam:URLQuery) -> String? {
         return queryItems?.first(where: { $0.name == queryParam.rawValue })?.value
     }
+}
+
+private enum URLPath: String {
+    case fetchSensor = "/json"
+    
+    func url(baseURL: URL) -> URL {
+        return baseURL.appendingPathComponent("\(rawValue)")
+    }
+}
+
+private enum URLQuery: String {
+    case fetchSensor = "show"
+    
+    func queryItem(value: String?) -> URLQueryItem {
+        return URLQueryItem(name: rawValue, value: value)
+    }
+}
+
+extension URLSessionConfiguration {
+    static let purple = URLSessionConfiguration.background(withIdentifier: "io.ballinger.PurpleAPI")
 }
