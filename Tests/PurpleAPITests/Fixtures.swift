@@ -99,4 +99,16 @@ enum Fixtures {
 }
 """#
     }
+    
+    static var sensorList: String {
+#"""
+{"version":"7.0.15",
+"fields":
+["ID","pm","age","pm_0","pm_1","pm_2","pm_3","pm_4","pm_5","pm_6","conf","pm1","pm_10","p1","p2","p3","p4","p5","p6","Humidity","Temperature","Pressure","Elevation","Type","Label","Lat","Lon","Icon","isOwner","Flags","Voc","Ozone1","Adc","CH"],
+"data":[
+[1596,2.1,0,2.1,2.1,1.6,1.5,3.0,4.4,7.1,100,1.2,2.9,420.1,118.5,20.4,2.5,0.9,0.1,62,73,1010.68,25,0,"Pacifica Sharp Park",37.628716,-122.48773,0,0,0,null,null,0.02,3]
+],
+"count":1}
+"""#
+    }
 }

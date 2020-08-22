@@ -1,5 +1,5 @@
 //
-//  PurpleAPI.swift
+//  PurpleAPIClient.swift
 //  PurpleAPI
 //
 //  Created by Chris Ballinger on 11/18/18.
@@ -12,11 +12,11 @@ import WatchKit
 import ClockKit
 #endif
 
-public class PurpleAPI: NSObject {
+public class PurpleAPIClient: NSObject {
     private var session: URLSession?
     private let decoder = JSONDecoder()
     private let baseURL = URL(string: "https://www.purpleair.com/")!
-    public static let shared = PurpleAPI()
+    public static let shared = PurpleAPIClient()
     
     public override init() {
         super.init()
@@ -40,7 +40,11 @@ public class PurpleAPI: NSObject {
     }
 }
 
-extension PurpleAPI: URLSessionDownloadDelegate {
+final class SessionManager: NSObject {
+    
+}
+
+extension PurpleAPIClient: URLSessionDownloadDelegate {
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let originalURL = downloadTask.originalRequest?.url,
             let components = URLComponents(url: originalURL, resolvingAgainstBaseURL: true),
@@ -87,7 +91,7 @@ extension PurpleAPI: URLSessionDownloadDelegate {
 
 }
 
-private extension PurpleAPI {
+private extension PurpleAPIClient {
 #if os(watchOS)
     func updateComplications() {
         let complicationServer = CLKComplicationServer.sharedInstance()

@@ -33,6 +33,14 @@ final class PurpleAPITests: XCTestCase {
         XCTAssertEqual("5.5e-08 g/L", gpl.description)
     }
     
+    func testDecodeSensorList() throws {
+        // https://www.purpleair.com/data.json?opt=1/i/mAQI/a10/cC0&fetch=true&nwlat=37.95280545255774&selat=37.723966026666204&nwlng=-122.43809247307286&selng=-122.23587537102202&fields=pm_1
+        let list: SensorList = try decodeResource(Fixtures.sensorList)
+        XCTAssertEqual(list.count, 1)
+        let sensors = list.sensors
+        XCTAssertEqual(list.count, sensors.count)
+    }
+    
     static var allTests = [
         ("testDecodeSensor", testDecodeSensor),
         ("testDecodeStats", testDecodeStats),
